@@ -1,0 +1,13 @@
+Írjuk meg a Newton-iterátort most általánosan úgy, hogy a függvény és a
+deriváltja is az előbb bemutatott módon legyen átadva és a kezdő
+paraméter típusa is általános T legyen.
+Ha jól csináltuk, akkor a következő hívásnak működnie kell:
+Newton([](double x){ return x*x - 612.0; },
+[](double x){ return 2.0*x; }, 10.0);
+
+Szorgalmi feladat:
+Írjuk meg úgy a Newton iterátort, hogy a megállási feltétel is egy függvény
+paraméter legyen!
+Ez a függvény az előző és az aktuális x-et kapja meg és bool-t ad vissza.
+Ha true, folytatódik az iteráció, ha false, akkor vége, és az aktuális x
+érték az eredmény.
