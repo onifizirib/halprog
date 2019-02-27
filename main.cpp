@@ -3,20 +3,23 @@
 #include <limits>
 
 template<typename F, typename DF, typename T>
-T newton_sq(T num, T x0, F f, DF df)
+T newton_sq(T x0, F f, DF df)
 {
-    T x = x0 - f(x0, num)/df(x0);
+    T x = x0 - f(x0)/df(x0);
 
-    for(unsigned int itnum = 0; itnum < 20; itnum++)
+    for(unsigned int itnum = 0; itnum < 40; itnum++)
     {
-        if (x*x - num < std::numeric_limits<T>::epsilon())
+        if (std::abs(f(x)) < 10*std::numeric_limits<T>::epsilon())
+        // x*x- num épp az f(x) értéke -> utóbbival általánosan fog működni, nem csak gyökkeresésre
+        // ehhez  meghívásnál "vicces" szintaxist kell használni, [num] írandó [] helyett.
+        // így a num változót kívülről használni tudja majd
         {
             std::cout << "itnum=" << itnum << std::endl;
             break;
         }
         else
         {
-            x = x - f(x, num)/df(x);
+            x = x - f(x)/df(x);
         }        
     }
     return(x);
@@ -26,7 +29,7 @@ int main(int, char**) {
     //hívjuk meg double-re a nwt_sw-t:
     double num = 512.0;
     double guess = 10.0;    
-    double gyok = newton_sq(num, guess,[](double x, double num){return x*x - num;},
+    double gyok = newton_sq(guess,[num](double x){return x*x - num;},
                     [](double x){return 2.0*x;});
     //MEGJEGYZÉS:
     //minden lambdának saját típusa van -> nem lesz mindkettő F típusparaméterrel helyettesíthető
@@ -37,7 +40,10 @@ int main(int, char**) {
     //hívjuk meg float-ra!
     float num1 = 512.0;
     float guess1 = 30.0;
-    float gyok1 = newton_sq(num, guess,[](float x, float num){return x*x - num;},
+    float gyok1 = newton_sq(guess,[num1](float x){return x*x - num1;},
                     [](float x){return 2.0*x;});
     std::cout << "szam: " << num1 << ", gyoke: " << gyok1 << std::endl;
+
+    //összehasonlításképp wolfram alpha:
+    std::cout << "WolframAlpha: 22.6274169979695207" << std::endl;
 }
