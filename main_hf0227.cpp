@@ -30,8 +30,8 @@ T newton_sq(T x0, F f, DF df)
         else
         {
             x_new = x - f(x)/df(x);
-			diffx = std::abs(x-x_new);
-			x = x_new;
+	    diffx = std::abs(x-x_new);
+	    x = x_new;
         }        
     }
     return x;
