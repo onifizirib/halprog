@@ -6,8 +6,8 @@ template<typename T, typename F, typename DF>
 T newton_sq(T x0, F f, DF df)
 {
     T x = x0;
-	T diffx = 1.0;
-	T x_new = x0;
+    T diffx = 1.0;
+    T x_new = x0;
 
     for(unsigned int itnum = 0; itnum < 40; itnum++)
     {
