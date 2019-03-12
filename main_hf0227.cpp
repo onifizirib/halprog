@@ -15,9 +15,13 @@ T newton_sq(T x0, F f, DF df)
 		/* előző leállási feltételem az abs(x*x-num) < epsilon volt, ehhez megjegyzések: 
 		   x*x-num épp az f(x) értéke -> utóbbival általánosan fog működni, nem csak gyökkeresésre
 		   (lévén mindig zérushelyet kell keressünk)
+		   
            ehhez  meghívásnál "vicces" szintaxist kell használni, [num] írandó [] helyett.
            így a num változót kívülről használni tudja majd
            ha az összes kívül létezőt akarjuk használni, [=] írható
+           
+           diffx legkisebb nemnulla értéke (reprezentálható legkisebb differencia) nem ekvidisztáns, nullától távolodva egyre nagyobb
+           -> epsilon-t fel kell slákázni x nagyságával az értelmes összehasonlításhoz
 		*/
         {
             std::cout << "itnum=" << itnum << std::endl;
