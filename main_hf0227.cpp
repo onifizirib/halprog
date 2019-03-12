@@ -2,21 +2,22 @@
 #include <cmath>
 #include <limits>
 
-template<typename F, typename DF, typename T>
+template<typename T, typename F, typename DF>
 T newton_sq(T x0, F f, DF df)
 {
-    T x = x0 - f(x0)/df(x0);
-	T diffx = std::abs(x-x0);
-	T x_new = x;
+    T x = x0;
+	T diffx = 1.0;
+	T x_new = x0;
 
     for(unsigned int itnum = 0; itnum < 40; itnum++)
     {
-        if (diffx < std::numeric_limits<T>::epsilon())
+        if (diffx < std::numeric_limits<T>::epsilon()*std::abs(x))
 		/* előző leállási feltételem az abs(x*x-num) < epsilon volt, ehhez megjegyzések: 
 		   x*x-num épp az f(x) értéke -> utóbbival általánosan fog működni, nem csak gyökkeresésre
 		   (lévén mindig zérushelyet kell keressünk)
            ehhez  meghívásnál "vicces" szintaxist kell használni, [num] írandó [] helyett.
            így a num változót kívülről használni tudja majd
+           ha az összes kívül létezőt akarjuk használni, [=] írható
 		*/
         {
             std::cout << "itnum=" << itnum << std::endl;
@@ -47,7 +48,7 @@ int main(int, char**) {
     //hívjuk meg float-ra!
     float num1 = 512.0;
     float guess1 = 30.0;
-    float gyok1 = newton_sq(guess,[num1](float x){return x*x - num1;},
+    float gyok1 = newton_sq(guess1,[num1](float x){return x*x - num1;},
                     [](float x){return 2.0*x;});
     std::cout << "szam: " << num1 << ", gyoke: " << gyok1 << std::endl;
 
