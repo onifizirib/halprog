@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cmath>
 #include <limits>
+#include <algorithm>
 
 void solve(double a, double b, double c)
 {
@@ -124,13 +125,17 @@ double integrate(int n, double a, double b)
     std::cout << "a=" << a << ", b=" << b << ", n=" << n << std::endl;
 
     //alapvető hibakezelések
+    double elojel = 0.0;
     if(b < a)
     {
-        double dummy = a;
-        a = b;
-        b = dummy;
+        std::swap(a,b);
+        elojel = -1.0;
     }
-
+    else
+    {
+        elojel = 1.0;
+    }
+    
     if (n%3 != 0)
     {
         std::cout << "number of intervals must be divisible by 3" << std::endl;
@@ -158,7 +163,7 @@ double integrate(int n, double a, double b)
     }
     sum += fv(a) +fv(b);
     sum *= (3.0/8.0)*stepsize;
-    return sum;
+    return sum*elojel;
 }
 
 //--------------------------------------------------------
