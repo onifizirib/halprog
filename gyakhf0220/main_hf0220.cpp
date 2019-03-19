@@ -189,13 +189,16 @@ int main(int, char**) {
     double upperim = 10.0;
     double ter;
     // wolframalpha as reference:
-    //https://www.wolframalpha.com/input/?i=integrate+(6cosx%2Fx)+x%3D%5B1,10%5D
-    double wa = -2.2971621354325410;
+    //test1: https://www.wolframalpha.com/input/?i=integrate+(6cosx%2Fx)+x%3D%5B1,10%5D
+    //double wa = -2.2971621354325410;    
+    //test2: https://www.wolframalpha.com/input/?i=integrate+(6cosx%2Fx)+x%3D%5B1.5,0.5%5D
+    // viszonylag kevés jegyet adott ki
+    double wa =  -3.88884;
     for (int n = 6; n < 91; n=n+9)
     {
         ter = integrate(n, lowerlim, upperim);
         std::cout << "integral hibaja=" << wa-ter << std::endl;
     }
-
+    std::cout << "integral: " << ter << std::endl;
     return 0;
 }
