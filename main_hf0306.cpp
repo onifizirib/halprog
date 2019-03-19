@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <array>
 #include <numeric>
 #include <algorithm>
 
@@ -17,18 +18,19 @@ double vectormean(std::vector<double> const &v)
    UI: a dokumentáció és a magyarázóábra binOp sorszámai épp fel vannak cserélve ^^"
 */
 
-std::vector<double> linreg(std::vector<double> const &x, std::vector<double> const &y)
+std::array<double,2> linreg(std::vector<double> const &x, std::vector<double> const &y)
 {
     //hibakezelés, ha x és y nem egyforma hosszúak
     if (x.size() != y.size())
     {
         std::cout << "the two vectors must have the same size" << std::endl;
-        std::vector<double> v{0.0};
+        std::array<double,2> v{0.0, 0.0};
         return v;
         /*
            egy hosszú vektorral térek vissza, bár lehet job lenne nulla hosszúval
            alapesetben 2 hosszúval tére vissza (b,m)
            azt nem tudom hogy lehet-e return után inicializálni v-t. egyelőre nem szereti.
+           UPDATE: mindenképp array-jel térek vissza
         */ 
     }
     double x_mean = vectormean(x);
@@ -64,7 +66,7 @@ std::vector<double> linreg(std::vector<double> const &x, std::vector<double> con
         std::cout << "nevezo: " << nevezo << "\n";
     */
     
-    std::vector<double> egyenes{meredekseg,eltolas};
+    std::array<double,2> egyenes{meredekseg,eltolas};
     return egyenes;
     /*
         most vettem észre, hogy a feladat kiírás szerint array-jel kellett volna visszatérni.
@@ -88,7 +90,7 @@ int main(int, char**) {
     */
     std::vector<double> ketpont_x{1.0, 5.0};
     std::vector<double> ketpont_y{3.0, 6.0};
-    std::vector<double> ketpont_lin = linreg(ketpont_x, ketpont_y);
+    std::array<double,2> ketpont_lin = linreg(ketpont_x, ketpont_y);
     std::for_each(ketpont_lin.begin(), ketpont_lin.end(), &kiirat);
     /*
         ezért kellett az <algorithm>-t behúzni
@@ -112,7 +114,7 @@ int main(int, char**) {
     */
     std::vector<double> otpont_x{0.0, 3.0, 2.8, 1.0, 2.0};
     std::vector<double> otpont_y{1.0, 9.0, 8.0, 3.1, 6.0};
-    std::vector<double> otpont_lin = linreg(otpont_x, otpont_y);
+    std::array<double,2> otpont_lin = linreg(otpont_x, otpont_y);
     std::for_each(otpont_lin.begin(), otpont_lin.end(), &kiirat);
     
 }
