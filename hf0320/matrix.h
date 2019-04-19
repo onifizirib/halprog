@@ -24,35 +24,30 @@ struct MatrixNxN
     //konstruktorok
     MatrixNxN()
     {
-        std::vector<T> v;
-        data = v;
-        // ez így elég gyanús, hogy lehet szebben is. hogy lehet valami ilyesmit csinálni: data = vector<T>; ?
-        //vagy csak simán vector<T> data; ? tudni fogja, hogy az a data az a matrixNxN data-jára vonatkozik?
+        std::vector<T> data;
+        /* 
+        Q: csak simán vector<T> data; ? tudni fogja, hogy az a data az a matrixNxN data-jára vonatkozik?
+        A: vector<T> data -> neki van default const-ja -> működni fog :D
+        */
         sizeN = 0;
     }
-    MatrixNxN(MatrixNxN<T> const& cpy)
-    {
-        data = cpy.data;
-        sizeN = cpy.sizeN;
-    }
-    MatrixNxN(MatrixNxN<T> && mv)
-    {
-        std::swap(data, mv.data);
-        std::swap(sizeN, mv.sizeN);
-    }
+    MatrixNxN(MatrixNxN<T> const&) = default;
+    MatrixNxN(MatrixNxN<T> && mv) = default;
+
     //konstruktor megadott elemekből
     template<typename F>
-    MatrixNxN(F f, int n)
+    MatrixNxN(int n, F f)
     {
         sizeN = n;
         n *= n;
-        if (f.size() != n)
-        {
-            std::cout << "number of given elements do not correnspont with the given size N" << std::endl;
-        }
+
         data.resize(n);        
-        for(int i=0; i<n; i++) {data[i] = f[i];}
-        // f(i) nem működne std::vector-ra, ezért írtam f[i]-t.
+        for(int i=0; i<n; i++) {data[i] = f(i);}
+        /*
+        Q: f(i) nem működne std::vector-ra, ezért írtam f[i]-t.
+        A: eredetileg függvény lenne f, pl egy lambda -> gömbölyűvel indexelés
+        így visszatértem az f(i) formátumra
+        */
     }
 
     //copy és move operátorok
@@ -70,10 +65,17 @@ struct MatrixNxN
         sizeN = std::move(mv.sizeN);
         return *this;
     }
-    //destruktort kell írnom? az világos, hogy minden kostruktort meg kellett ha akár egyet is írtam. ha igen, hogyan?
+    /*
+    Q: destruktort kell írnom? az világos, hogy minden kostruktort meg kellett ha akár egyet is írtam. ha igen, hogyan?
+    A: nem szükséges destruktort írni.
+    */
 
     //műveletekhez lehessen használni vektorszerűként (csak olvasó esetekre cbegin cend)
-    //ez így oké? nem kontárkodok így bele abba, ahogy eltárolja magát egy ilyen matrix struct egy példánya? pl nem tűnik-e/mutat-e még valami el a sizeN tag(ra)?
+    /*
+    Q: ez így oké? nem kontárkodok így bele abba, ahogy eltárolja magát egy ilyen matrix struct egy példánya? pl nem tűnik-e/mutat-e még valami el a sizeN tag(ra)?
+    A: nem lesz gond, nem akad össze semmivel
+    */
+    
     auto begin()    {return data.begin();}
     auto cbegin()   {return data.cbegin();}
     auto end()      {return data.end();}
@@ -141,6 +143,10 @@ MatrixNxN<T> operator+ (MatrixNxN<T> const& m1, MatrixNxN<T> const& m2)
     result.data.resize(m1.data.size());
     result.sizeN = m1.sizeN;
     std::transform(m1.cbegin(),m1.cend(),m2.cbegin(),result.begin(),add);
+    /*
+    szóval ha jól értem, a  MatrixNxN<T> result; sor ügyes átfogalmazásával és megfelelő konstruktorok írásával a return-ig a sorok megspórolhatóak
+    mikor szükséges "2 indexes konstruktort" használni? amit még nehezen tudok elképzelni, hogy hogyan kéne kinézzen
+    */
     return result;
 }
 
@@ -275,16 +281,17 @@ MatrixNxN<T> operator* (MatrixNxN<T> const& m1, MatrixNxN<T> const& m2)
     MatrixNxN<T> result;
     result.data.resize(m1.data.size());
     result.sizeN = N;
+    T tempRes = (T)0;
     for(int i=1; i<=N; i++)
     {
         for(int j=1; j<=N; j++)
         {
-            result(i,j) = (T)0;
-            // bár ha jól gondolom ez eleve erre ((T)0) lett inicializálva
+            tempRes = (T)0;
             for(int n=1; n<=N; n++)
             {
-                result(i,j) += m1(i,n)*m2(n,j);
+                tempRes += m1(i,n)*m2(n,j);
             }
+            result(i,j) = tempRes;
         }
     }
     return result;
@@ -319,8 +326,11 @@ MatrixNxN<T> transpone(MatrixNxN<T> const& m)
 template<typename T>
 MatrixNxN<T> transpone(MatrixNxN<T>&& m)
 {
-    //felső háromszögre meghívva -> ha csak 1x1-es a mátrix, nem fog működni
+    //felső háromszögre meghívva -> ha csak 1x1-es a mátrix, nem fog működni -> ezt külön lekezelem
     int N = m.sizeN;
+    
+    if(N == 1){return std::move(m);}
+    
     for(int i=2; i<N; i++)
     {
         for(int j=1; j<i; j++)
