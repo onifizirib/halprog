@@ -9,11 +9,11 @@ int main(int, char**) {
     std::cout << "initializing empty matrix: " <<m;
     
     std::vector<int> v{1,11,111,2,22,222,3,33,333};
-    MatrixNxN<int> m1(v,3);
+    MatrixNxN<int> m1(3, [=](int i){return v[i];});
     std::cout <<"initializing matrix with a vector as its data: " <<m1;
     
     /*
-    MatrixNxN<int> m2(v,3);
+    MatrixNxN<int> m2(3, [=](int i){return v[i];});
     m2 += m1;
     //úgy néz ki, a matrix.begin() nem megfelelő. a pointereknek is különböző típusa van? mi a feloldás akkor, 
     //ha nem tudom "kiköpetni" egy függvénnyel a matrix.data.begin()-t?
