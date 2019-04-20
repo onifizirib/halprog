@@ -18,21 +18,27 @@ struct MatrixNxN
     int sizeN;
 
     //indexelés
-    T&          operator()(int x, int y)        {return data[(x-1)*sizeN + y-1];}
-    T const&    operator()(int x, int y) const  {return data[(x-1)*sizeN + y-1];}
+    T&          operator()(int x, int y)        {return data[(x)*sizeN + y];}
+    T const&    operator()(int x, int y) const  {return data[(x)*sizeN + y];}
+    T&          operator[](int i)               {return data[i];}
+    T const&    operator[](int i) const         {return data[i];}
 
     //konstruktorok
     MatrixNxN()
     {
-        std::vector<T> data;
         /* 
         Q: csak simán vector<T> data; ? tudni fogja, hogy az a data az a matrixNxN data-jára vonatkozik?
-        A: vector<T> data -> neki van default const-ja -> működni fog :D
+        A: vector<T> data -> neki van default const-ja -> nem kell itt írni
         */
         sizeN = 0;
     }
     MatrixNxN(MatrixNxN<T> const&) = default;
-    MatrixNxN(MatrixNxN<T> && mv) = default;
+    MatrixNxN(MatrixNxN<T> && mv)
+	{
+		std::swap(data, mv.data);
+		sizeN = 0;
+		std::swap(sizeN, mv.sizeN);		
+	}
 
     //konstruktor megadott elemekből
     template<typename F>
@@ -63,6 +69,10 @@ struct MatrixNxN
         if(&mv == this) {return *this;}
         data = std::move(mv.data);
         sizeN = std::move(mv.sizeN);
+		/*
+		skalár nem move-olható, másolódni fog -> kinullázni érdemes
+		*/
+		mv.sizeN = (T)0;
         return *this;
     }
     /*
@@ -76,10 +86,10 @@ struct MatrixNxN
     A: nem lesz gond, nem akad össze semmivel
     */
     
-    auto begin()    {return data.begin();}
-    auto cbegin()   {return data.cbegin();}
-    auto end()      {return data.end();}
-    auto cend()     {return data.cend();}
+    auto begin()   		{return data.begin();}
+    auto cbegin() const {return data.cbegin();}
+    auto end()      	{return data.end();}
+    auto cend()   const	{return data.cend();}
 
     //+= operátor
     MatrixNxN<T>& operator+= (MatrixNxN<T> const& cpy)
@@ -151,7 +161,7 @@ MatrixNxN<T> operator+ (MatrixNxN<T> const& m1, MatrixNxN<T> const& m2)
 }
 
 template<typename T>
-MatrixNxN<T> operator+ (MatrixNxN<T>&& m1, MatrixNxN<T> const& m2)
+MatrixNxN<T>&& operator+ (MatrixNxN<T>&& m1, MatrixNxN<T> const& m2)
 {
     sizecheck(m1, m2);
     std::transform(m1.begin(),m1.end(),m2.cbegin(),m1.begin(),add);
@@ -159,7 +169,7 @@ MatrixNxN<T> operator+ (MatrixNxN<T>&& m1, MatrixNxN<T> const& m2)
 }
 
 template<typename T>
-MatrixNxN<T> operator+ (MatrixNxN<T> const& m1, MatrixNxN<T>&& m2)
+MatrixNxN<T>&& operator+ (MatrixNxN<T> const& m1, MatrixNxN<T>&& m2)
 {
     sizecheck(m1, m2);
     std::transform(m1.cbegin(),m1.cend(),m2.begin(),m2.begin(),add);
@@ -167,7 +177,7 @@ MatrixNxN<T> operator+ (MatrixNxN<T> const& m1, MatrixNxN<T>&& m2)
 }
 
 template<typename T>
-MatrixNxN<T> operator+ (MatrixNxN<T>&& m1, MatrixNxN<T>&& m2)
+MatrixNxN<T>&& operator+ (MatrixNxN<T>&& m1, MatrixNxN<T>&& m2)
 {
     sizecheck(m1, m2);
     std::transform(m1.begin(),m1.end(),m2.cbegin(),m1.begin(),add);
@@ -187,7 +197,7 @@ MatrixNxN<T> operator- (MatrixNxN<T> const& m1, MatrixNxN<T> const& m2)
 }
 
 template<typename T>
-MatrixNxN<T> operator- (MatrixNxN<T>&& m1, MatrixNxN<T> const& m2)
+MatrixNxN<T>&& operator- (MatrixNxN<T>&& m1, MatrixNxN<T> const& m2)
 {
     sizecheck(m1, m2);
     std::transform(m1.begin(),m1.end(),m2.cbegin(),m1.begin(),sub);
@@ -195,7 +205,7 @@ MatrixNxN<T> operator- (MatrixNxN<T>&& m1, MatrixNxN<T> const& m2)
 }
 
 template<typename T>
-MatrixNxN<T> operator- (MatrixNxN<T> const& m1, MatrixNxN<T>&& m2)
+MatrixNxN<T>&& operator- (MatrixNxN<T> const& m1, MatrixNxN<T>&& m2)
 {
     sizecheck(m1, m2);
     std::transform(m1.cbegin(),m1.cend(),m2.begin(),m2.begin(),sub);
@@ -203,7 +213,7 @@ MatrixNxN<T> operator- (MatrixNxN<T> const& m1, MatrixNxN<T>&& m2)
 }
 
 template<typename T>
-MatrixNxN<T> operator- (MatrixNxN<T>&& m1, MatrixNxN<T>&& m2)
+MatrixNxN<T>&& operator- (MatrixNxN<T>&& m1, MatrixNxN<T>&& m2)
 {
     sizecheck(m1, m2);
     std::transform(m1.begin(),m1.end(),m2.cbegin(),m1.begin(),sub);
@@ -222,7 +232,7 @@ MatrixNxN<T> operator* (MatrixNxN<T> const& m, T const& scal)
 }
 
 template<typename T>
-MatrixNxN<T> operator* (MatrixNxN<T>&& m, T const& scal)
+MatrixNxN<T>&& operator* (MatrixNxN<T>&& m, T const& scal)
 {
     std::transform(m.begin(),m.end(),m.begin(),[=](T const& x){return x*scal;});
     return std::move(m);
@@ -239,7 +249,7 @@ MatrixNxN<T> operator* (T const& scal, MatrixNxN<T> const& m)
 }
 
 template<typename T>
-MatrixNxN<T> operator* (T const& scal, MatrixNxN<T>&& m)
+MatrixNxN<T>&& operator* (T const& scal, MatrixNxN<T>&& m)
 {
     std::transform(m.begin(),m.end(),m.begin(),[=](T const& x){return scal*x;});
     return std::move(m);
@@ -258,7 +268,7 @@ MatrixNxN<T> operator/ (MatrixNxN<T> const& m, T const& scal)
 }
 
 template<typename T>
-MatrixNxN<T> operator/ (MatrixNxN<T>&& m, T const& scal)
+MatrixNxN<T>&& operator/ (MatrixNxN<T>&& m, T const& scal)
 {
     if ((T)0 == scal) {std::cout << "dividing with zero \n";}
     std::transform(m.begin(),m.end(),m.begin(),[=](T const& x){return x/scal;});
@@ -282,12 +292,12 @@ MatrixNxN<T> operator* (MatrixNxN<T> const& m1, MatrixNxN<T> const& m2)
     result.data.resize(m1.data.size());
     result.sizeN = N;
     T tempRes = (T)0;
-    for(int i=1; i<=N; i++)
+    for(int i=0; i<N; i++)
     {
-        for(int j=1; j<=N; j++)
+        for(int j=0; j<N; j++)
         {
             tempRes = (T)0;
-            for(int n=1; n<=N; n++)
+            for(int n=0; n<N; n++)
             {
                 tempRes += m1(i,n)*m2(n,j);
             }
@@ -299,15 +309,15 @@ MatrixNxN<T> operator* (MatrixNxN<T> const& m1, MatrixNxN<T> const& m2)
 
 //transzponálás (2 verzió)
 template<typename T>
-MatrixNxN<T> transpone(MatrixNxN<T> const& m)
+MatrixNxN<T> transpose(MatrixNxN<T> const& m)
 {
     MatrixNxN<T> result;
     int N = m.sizeN;
     result.data.resize(m.data.size());
     result.sizeN = N;
-    for(int i=1; i<=N; i++)
+    for(int i=0; i<N; i++)
     {
-        for(int j=1; j<=N; j++)
+        for(int j=0; j<N; j++)
         {
             if (i==j)
             {
@@ -324,16 +334,16 @@ MatrixNxN<T> transpone(MatrixNxN<T> const& m)
 }
 
 template<typename T>
-MatrixNxN<T> transpone(MatrixNxN<T>&& m)
+MatrixNxN<T>&& transpose(MatrixNxN<T>&& m)
 {
     //felső háromszögre meghívva -> ha csak 1x1-es a mátrix, nem fog működni -> ezt külön lekezelem
     int N = m.sizeN;
     
     if(N == 1){return std::move(m);}
     
-    for(int i=2; i<N; i++)
+    for(int i=1; i<N-1; i++)
     {
-        for(int j=1; j<i; j++)
+        for(int j=0; j<i; j++)
         {
             std::swap(m(i,j),m(j,i));
         }
