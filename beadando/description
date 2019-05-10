@@ -1,0 +1,7 @@
+Gráf osztály (irányítatlan)
+-Lehessen bővíteni új csúccsal vagy éllel, illetve eltávolítani iyleneket
+-Támogasson legrövidebb utat (small world property ellenőrzéséhez szükség van az átlagos legrövidebb úthosszra)
+-Fokszám-eloszlás lekérdezése
+-Klaszterezési együttható lekérdezése
+-Gráfnövekedési algoritmusok (a fent említettek előre lefixált csúcsszámmal dolgoznak, azokat huzalozza össze a modell szerint)
+-Predikálófüggvények megírása, hogy össze lehessen hasonlítani az emléleti és a létrehozott jellemzőket
