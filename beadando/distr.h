@@ -44,6 +44,35 @@ struct distr
         hist.resize(binNum);
     }
 
+    //operator=
+    distr& operator=(distr const& cpy)
+    {
+        if(&cpy == this) {return *this;}
+
+        hist = cpy.hist;
+        mini = cpy.mini;
+        maxi = cpy.maxi;
+        binNum = cpy.binNum;
+        binsize = cpy.binsize;        
+        return *this;
+    }
+    distr& operator=(distr && mv)
+    {
+        if(&mv == this) {return *this;}
+
+        hist = std::move(mv.hist);
+        mini = std::move(mv.mini);
+        maxi = std::move(mv.maxi);	
+        binNum = std::move(mv.binNum);
+        binsize = std::move(mv.binsize);	
+		//skalár másolódni fog -> kinullázni érdemes
+		mv.mini = 0.0;
+        mv.maxi = 0.0;
+        mv.binNum = 0;
+        mv.binsize = 0.0;
+        return *this;
+    }
+
     //adatfeltöltés
     template<typename T>
     void feltolt(graph<T> const& graf)
