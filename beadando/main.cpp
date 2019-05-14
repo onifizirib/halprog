@@ -1,5 +1,5 @@
 #include <iostream>
-#include "distr.h"
+#include "models.h"
 
 int main(int, char**) {
     std::cout << "Hello, world!\n";
