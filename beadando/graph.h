@@ -3,8 +3,6 @@
 #include <iostream>
 #include <numeric>
 #include <cmath>
-#include <random>
-//#include <chrono>
 
 
 template<typename T>
@@ -49,6 +47,39 @@ class graph
                         // ha [=](std::vector<T> v){...} a szintaxis, akkor nem tudja i-t növelni
                     });
     }
+
+//operátor=
+    graph<T>& operator=(graph<T> const& cpy)
+    {
+        if(&cpy == this) {return *this;}
+
+        nodeNum = cpy.getNodeNum();
+        linkNum = cpy.getLinkNum();
+        //adjList = cpy.getAdjList();
+        //várjunk csak. ez referencia szerint adja át, nem másolja az adatot!
+        adjList.resize(nodeNum);
+        std::copy(cpy.getAdjList().begin(), cpy.getAdjList().end(), adjList.begin());
+        
+        return *this;
+    }
+    /*
+    graph<T>& operator=(graph<T> && mv)
+    {
+        if(&mv == this) {return *this;}
+
+        adjList = std::move(mv.getAdjList());
+        //ennek a sornak van értelme? tényleg az fog történni, aminek kéne? Le fog-e nullázódni az mv.adjList?
+
+        nodeNum = std::move(mv.getNodeNum());
+        linkNum = std::move(mv.getLinkNum());		
+		//skalár nem move-olható, másolódni fog -> kinullázni érdemes
+		mv.nodeNum = (T)0;
+        mv.linkNum = (T)0;
+        //nem valid parancs, nem férek hozzá az mv.nodeNUm-hoz!
+
+        return *this;
+    }
+    */
 
 //állapot lekérdezések
     int getNodeNum() const
@@ -114,6 +145,23 @@ class graph
         }
 
         return std::vector<int>{};
+    }
+
+    int degree(T const& node) const
+    {
+        int ind = indexOfNode(node);
+        if (ind == -1) {return -1;}
+        return adjList[ind].size()-1;
+    }
+
+    double avgDegree() const
+    {
+        double avgDegree = 0.0;
+        std::for_each(adjList.cbegin(), adjList.cend(), [&](std::vector<T> const& v)
+        {
+            avgDegree += v.size()-1;
+        });
+        return avgDegree/double(nodeNum);
     }
 
 
@@ -362,7 +410,7 @@ double avgPathLenFromNode(T const& startNode, graph<T> const& g)
 
     int sumPathLen = 0;
     lvl = 0;
-    std::for_each(level.begin(), level.end(), [&](std::vector<T> v) mutable
+    std::for_each(level.begin(), level.end(), [&](std::vector<T>& v) mutable
                 {
                     sumPathLen += v.size()*lvl;
                     lvl++;
