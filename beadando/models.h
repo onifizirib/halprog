@@ -105,7 +105,7 @@ struct ER
                     rndNum = unif(rng);
                     if (rndNum < p)
                     {
-                        std::cout << "unif random number: "<<rndNum<<" < "<< p <<"\n";
+                        //std::cout << "unif random number: "<<rndNum<<" < "<< p <<"\n";
                         graf.addLink(i,j);
                     }
                 }
