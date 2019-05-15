@@ -98,8 +98,28 @@ int main(int, char**) {
    }
 
    std::cout << "-----------------\n";
-   ER erdos(12, 0.7);
-   std::cout << erdos.graf;
+   int nodenum = 200;
+   double linkprob = 0.6;
+   ER erdos(nodenum, linkprob);
+   //std::cout << erdos.graf;
+   ER_exp vartErdos(nodenum,linkprob);
 
-   ER_exp vartErdos(12,0.7);
+   std::vector<double> differOfDist;
+   std::cout<<"elementwise abs difference of degree distribution: ";
+   for(int i=0; i<nodenum; i++)
+   {
+       differOfDist.push_back(std::abs(erdos.degreeDist.hist[i]-vartErdos.degreeDist_exp.hist[i]));
+       std::cout << differOfDist[i] <<", ";
+   }
+   std::cout<<std::endl;
+   std::cout<<"sum of elementwise abs difference between degree dist-s: "<<std::accumulate(differOfDist.begin(), differOfDist.end(), 0.0)<<std::endl;
+   
+   std::cout << "expected clustering coefficient = " << vartErdos.c_exp << std::endl;
+   std::cout<<"   difference of average clustering coefficient: "<<std::abs(erdos.c-vartErdos.c_exp)<<"\n";
+   std::cout << "expected average shortest path = " << vartErdos.l_exp << std::endl;
+   std::cout<<"   difference of average shortest path: "<<std::abs(erdos.l-vartErdos.l_exp)<<"\n";
+   std::cout << "expected number of links = " << vartErdos.M_exp << std::endl;
+   std::cout<<"   difference of link number: "<<std::abs(erdos.M-vartErdos.M_exp)<<"\n";
+   std::cout << "expected average degree = " << vartErdos.k_exp << std::endl;
+   std::cout<<"   difference of average degree: "<<std::abs(erdos.k-vartErdos.k_exp)<<"\n";   
 }
