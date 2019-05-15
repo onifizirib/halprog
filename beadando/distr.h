@@ -82,9 +82,11 @@ struct distr
         std::vector<int> ranks;
         std::for_each(adjList.begin(), adjList.end(), [&](std::vector<T>& v) mutable {ranks.push_back(v.size()-1);});
 
+        /*
         std::cout << "node ranks/degrees: ";
         std::for_each(ranks.begin(), ranks.end(), [](int& rank) mutable {std::cout << rank << ", ";});
         std::cout << std::endl;
+        */
 
         int hanyadik = 0;
         std::for_each(ranks.begin(), ranks.end(), [&](int& rank) mutable
