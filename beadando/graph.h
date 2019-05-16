@@ -385,7 +385,7 @@ double avgPathLenFromNode(T const& startNode, graph<T> const& g)
     
     std::vector<T> neigh;
     int iternum = 0;
-    while(!toReach.empty() && !level[lvl].empty() && iternum < 10)
+    while(!toReach.empty() && !level[lvl].empty())
     {
         //std::cout << "melyseg: "<< lvl << std::endl;
         level.push_back(std::vector<T>{});
@@ -475,20 +475,46 @@ graph<int> WS(int const& nodenum, int q, double const& rewireProb)
     int thres = floor((double)nodenum/2.0);
     if (q > thres) {q = thres;}
 
+    std::random_device rd{};
+    std::minstd_rand rng(rd());
+    std::uniform_real_distribution<double> unif(0, 1);
+    std::uniform_int_distribution<> rndNode(0, nodenum);
+    std::uniform_int_distribution<> whichNode(0, 1);
+    int remainNode = -1;
+
     graph<int> graf(nodenum);
     for(int i=1; i<q+1; i++)
     {
         for(int j=0; j<nodenum-i; j++)
         {
-            graf.addLink(j,j+i);
+            if (unif(rng) < rewireProb)
+             //random kell-e huzalozni (az egyik végét az élnek)?
+            {
+                if (whichNode(rng) == 0){ remainNode = j;  }
+                else                    { remainNode = j+i;}
+                graf.addLink(remainNode, rndNode(rng));
+            }
+            else
+            {
+                graf.addLink(j,j+i);
+                 //ha nem kell random huzalozni, akkor gyűrű struktúra szerinti élhozzáadás
+            }        
         }
         for(int j=0; j<i; j++)
         {
-            graf.addLink(j,nodenum-i+j);
+            if (unif(rng) < rewireProb)
+             //random kell-e huzalozni (az egyik végét az élnek)?
+            {
+                if (whichNode(rng) == 0){ remainNode = j;           }
+                else                    { remainNode = nodenum-i+j; }
+                graf.addLink(remainNode, rndNode(rng));
+            }
+            else
+            {
+                graf.addLink(j,nodenum-i+j);
+                 //ha nem kell random huzalozni, akkor gyűrű struktúra szerinti élhozzáadás
+            }
         }
     }
-    //összes linkre: beta valószínűséggel áthuzalozás random node-hoz
-    //TODO
-
     return graf;
 }
