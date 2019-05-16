@@ -36,9 +36,9 @@ struct statistics
 
            linkNum = linkprob*dlN*(dlN-1.0)/2.0;
            avgDegr = dlN*linkprob;
-           //igazából pontosan (dlN-1)linkprob
+            //igazából pontosan (dlN-1)linkprob
            double euler_gamma = 0.57721566490153286060651209008240243104215933593992;
-           //form https://hu.wikipedia.org/wiki/Euler%E2%80%93Mascheroni-%C3%A1lland%C3%B3
+            //form https://hu.wikipedia.org/wiki/Euler%E2%80%93Mascheroni-%C3%A1lland%C3%B3
            avgPath = (log(dlN)-euler_gamma)/log(avgDegr) + 0.5;
            avgClus = linkprob;
 
@@ -55,7 +55,7 @@ struct statistics
    }
 
 //expected statistisc to WS graph with parameter nodenum, "distance of farest neighbour to connect" q, and rewiring probability beta
-   statistics(int const& nodenum, int q, int const& beta)
+   statistics(int const& nodenum, int q, double const& beta)
    {
        if(nodenum < 2)
        {
@@ -71,15 +71,17 @@ struct statistics
            double dlN = double(nodenum);
            double dlq = double(q);
 
-           linkNum = 2*q;
+           linkNum = nodeNum*q;
            avgDegr = 2.0*dlq;
-           if (beta == 0)
+           if (beta < 1e-15)
            {
+               //std::cout << "beta~0" << std::endl;
                avgPath = dlN/(4.0*dlq);
                avgClus = (3.0*dlq-3.0)/(4.0*dlq-2.0);
            }
-           else if (beta == 1)
+           else if (1.0-beta < 1e-15)
            {
+               //std::cout << "beta~1" << std::endl;
                avgPath = log(dlN)/log(2.0*dlq);
                avgClus = (2.0*dlq)/(dlN-1.0);
            }
