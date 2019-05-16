@@ -114,14 +114,14 @@ int main(int, char**) {
 }
 //-------------------------------------------------------------------
 {
-   std::cout << "----Erdos-Renyi test----\n";
+   std::cout << "----------Erdos-Renyi test----------\n";
    int nodenum = 200;
    double linkprob = 0.3;
    graph<int> erdos = ER(nodenum, linkprob);
    //std::cout << erdos;
    statistics erdos_gen(erdos);
    statistics erdos_exp(nodenum, linkprob);
-   //itt remélem hogy nem a BA model predikciót hívja meg, mert szeret konvertálgatni int-et double-lá -.-
+    //itt remélem hogy nem a BA model predikciót hívja meg, mert szeret konvertálgatni int-et double-lá -.-
 
    std::vector<double> differOfDist;
    differOfDist.resize(nodenum);
@@ -156,28 +156,31 @@ int main(int, char**) {
    else{ std::cout << "Could not open output file.\n"; }
 }
 
-//-------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------
 {
-   std::cout << "----Watts-Strogatz test----\n";
-   int q = 3;
+   std::cout << "---------Watts-Strogatz test---------\n";
+   int q = 2;
    double beta = 0.0;
-   graph<int> watts = WS(9, q, beta);
-   std::cout<<watts; 
+   graph<int> watts = WS(6, q, beta);
+   std::cout << watts << "\n"; 
    
-   watts = WS(61, q, beta);    
-   std::cout<<"WS(61,q,beta): avg path length from node0 = "<<avgPathLenFromNode(0,watts)<<"\n";
-   watts = WS(62, q, beta);
-   std::cout<<"WS(62,q,beta): avg path length from node0 = "<<avgPathLenFromNode(0,watts)<<"\n";
-   
-   int nodenum = 100;
-   std::cout<<"WS(100,q,beta) test\n";
-   watts = WS(nodenum, q, beta);
+   watts = WS(62, q, 0.0);  
+   std::cout << "----beta changing test----\n";
+   std::cout << "WS(62,q,0): avg path length from node0 = " << avgPathLenFromNode(0,watts) << "\n";
+   watts = WS(62, q, 0.2);
+   std::cout << "WS(62,q,0.2): avg path length from node0 = " << avgPathLenFromNode(0,watts) << "\n";
+}
+//--------------------------------------------------------------------------------------------------------- 
+{
+   int nodenum = 200;
+   int q = 3;
+   double beta = 1.0;
+   std::cout << "---------------WS(" << nodenum << ", " << q << ", " << beta << ") test--------------------\n";
+   graph<int> watts = WS(nodenum, q, beta);
    statistics watts_gen(watts);
    statistics watts_exp(nodenum, q, beta);
    
-   //std::cout<<std::endl;
-   std::cout<<"there was no expectation for the degree distribution."<<std::endl;
-   
+   std::cout<<"there was no expectation for the degree distribution."<<std::endl;   
    std::cout << "expected clustering coefficient = " << watts_exp.avgClus << std::endl;
    std::cout << "   difference of average clustering coefficient: "<< std::abs(watts_gen.avgClus - watts_exp.avgClus) << "\n";
    std::cout << "expected average shortest path = " << watts_exp.avgPath << std::endl;
@@ -188,5 +191,25 @@ int main(int, char**) {
    std::cout << "   difference of average degree: "<< std::abs(watts_gen.avgDegr - watts_exp.avgDegr) << "\n";
    std::cout << "----------------------\n";
 }
-
+//---------------------------------------------------------------------------------------------------------
+{
+   int nodenum = 200;
+   int q = 3;
+   double beta = 0.0;
+   std::cout << "-----------------WS(" << nodenum << ", " << q << ", "<< beta << ") test-------------------\n";
+   graph<int> watts = WS(nodenum, q, beta);
+   statistics watts_gen(watts);
+   statistics watts_exp(nodenum, q, beta);
+   
+   std::cout<<"there was no expectation for the degree distribution."<<std::endl;   
+   std::cout << "expected clustering coefficient = " << watts_exp.avgClus << std::endl;
+   std::cout << "   difference of average clustering coefficient: "<< std::abs(watts_gen.avgClus - watts_exp.avgClus) << "\n";
+   std::cout << "expected average shortest path = " << watts_exp.avgPath << std::endl;
+   std::cout << "   difference of average shortest path: "<< std::abs(watts_gen.avgPath - watts_exp.avgPath) << "\n";
+   std::cout << "expected number of links = " << watts_exp.linkNum << std::endl;
+   std::cout << "   difference of link number: "<< std::abs(watts_gen.linkNum - watts_exp.linkNum) << "\n";
+   std::cout << "expected average degree = " << watts_exp.avgDegr << std::endl;
+   std::cout << "   difference of average degree: "<< std::abs(watts_gen.avgDegr - watts_exp.avgDegr) << "\n";
+   std::cout << "----------------------\n";
+}
 }
