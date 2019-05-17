@@ -1,23 +1,26 @@
 #include <iostream>
-//#include <string>
+#include <string>
+//#include <cstring>
 //#include <sstream>
 #include <fstream>
 #include "statistics.h"
 
 int main(int, char**) {
+    
 {    
     std::cout << "Hello, world!\n";
-    graph<int> proba;
-    int A = 9;
-    int B = 8;
-    int C = 4;
+    graph< std::string > proba;
+    std::string A = "elso";
+    std::string B = "masodik";
+    std::string C = "harmadik";
     proba.addNode(A);
     proba.addNode(B);
     proba.addNode(B);
     proba.addNode(C);
     proba.addLink(A, B);
     proba.addLink(A, B);
-    std::vector<std::vector<int>> const v = proba.getAdjList();
+    std::vector<std::vector<std::string>> const v = proba.getAdjList();
+    std::cout<<"---------\n";
     std::cout<< "adjList hossza: " << v.size() << ", NodeNum: " << proba.getNodeNum() <<"\n";
     std::cout<< "adjList elemeinek hossza: ";
     for(int i=0; i<v.size(); i++)
@@ -29,7 +32,7 @@ int main(int, char**) {
     //std::cout<<v[1][0]<<", "<<v[1][1]<<"\n";
     std::cout << proba;
 
-    std::cout << "link deletion then node deletion\n";
+    std::cout << "---link deletion then node deletion---\n";
     proba.deleteLink(B,A);
     proba.deleteNode(B);    
     proba.deleteLink(C,A);
@@ -37,7 +40,7 @@ int main(int, char**) {
     std::cout << proba;
 
 //------------------
-    graph<int> proba1 = proba;
+    graph<std::string> proba1 = proba;
     proba1 = std::move(proba);
 }
 //------------------
@@ -76,6 +79,7 @@ int main(int, char**) {
     double avgC = avgClusCoeff(proba2);
     std::cout << "avg clustering coeff = " << avgC << "\n";
     std::cout << "---------\n";
+
     /*
     //test for findNeighbors and commonNodes
     std::vector<int> nei3 = findNeighbors(wat[3][0],proba2);
@@ -211,5 +215,42 @@ int main(int, char**) {
    std::cout << "expected average degree = " << watts_exp.avgDegr << std::endl;
    std::cout << "   difference of average degree: "<< std::abs(watts_gen.avgDegr - watts_exp.avgDegr) << "\n";
    std::cout << "----------------------\n";
+}
+
+//---------------------------------------------------------------------------------------------------------
+{
+    std::cout << "------------------Barabasi-Albert test-------------------\n";
+    int m = 3;
+    int T = 10;
+    graph<int> barabasi = BA(m, T);
+    //std::cout<<barabasi;
+}
+{
+    int m = 3;
+    int T = 200;
+    graph<int> barabasi = BA(m, T);
+    statistics BA_gen(barabasi);
+    statistics BA_exp(m,T);
+ 
+   std::cout << "expected clustering coefficient = " << BA_exp.avgClus << std::endl;
+   std::cout << "   difference of average clustering coefficient: "<< std::abs(BA_gen.avgClus - BA_exp.avgClus) << "\n";
+   std::cout << "expected average shortest path = " << BA_exp.avgPath << std::endl;
+   std::cout << "   difference of average shortest path: "<< std::abs(BA_gen.avgPath - BA_exp.avgPath) << "\n";
+   std::cout << "expected number of links = " << BA_exp.linkNum << std::endl;
+   std::cout << "   difference of link number: "<< std::abs(BA_gen.linkNum - BA_exp.linkNum) << "\n";
+   std::cout << "expected average degree = " << BA_exp.avgDegr << std::endl;
+   std::cout << "   difference of average degree: "<< std::abs(BA_gen.avgDegr - BA_exp.avgDegr) << "\n";
+   std::cout << "----------------------\n";
+
+   //statistics kiiratása
+   std::ofstream outfile;
+   outfile.open("BA.txt");
+   if(outfile.is_open())
+   {
+       outfile << BA_gen;
+       outfile << BA_exp;
+       outfile.close();
+   }
+   else{ std::cout << "Could not open output file.\n"; }
 }
 }
