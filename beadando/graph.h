@@ -288,7 +288,7 @@ std::vector<T> findNeighbors(T const& node, graph<T> const& g)
 {
     std::vector<T> neigh;
     int ind = g.indexOfNode(node);
-    std::vector<std::vector<T>> const adjList = g.getAdjList();
+    std::vector<std::vector<T>> const& adjList = g.getAdjList();
     if (ind != -1)
     {
         neigh = adjList[ind];
@@ -350,7 +350,7 @@ double avgClusCoeff(graph<T> const& g)
         std::cout << "the graph has zero nodes.\n";
         return 0.0;
     }
-    std::vector<std::vector<T>> const adjList = g.getAdjList();
+    std::vector<std::vector<T>> const& adjList = g.getAdjList();
     T node;
     for(int i=0; i<nodenum; i++)
     {
@@ -428,7 +428,7 @@ double avgPathLenFromNode(T const& startNode, graph<T> const& g)
 template<typename T>
 double avgPathLen(graph<T> const& g)
 {
-    std::vector<std::vector<T>> const adjList = g.getAdjList();
+    std::vector<std::vector<T>> const& adjList = g.getAdjList();
     double sumPathLen = 0.0;
     double pathLen = 0.0;
     double nodenum = (double)g.getNodeNum();
@@ -516,5 +516,121 @@ graph<int> WS(int const& nodenum, int q, double const& rewireProb)
             }
         }
     }
+    return graf;
+}
+
+//Barabási-Albert gráf generálása
+graph<int> BA(int const& m, int const& T)
+{
+    if(m < 1) {std::cout << "m sould be at least 1.\n";}
+    
+    std::vector<int> ranks(m+T,0);
+    std::vector<int> weights(m,0);
+    
+    //generate starting "full" graph
+    graph<int> graf(m+T);
+    for(int i=0; i<m; i++)
+    {
+        for(int j=m-1; j>i; j--)
+        {
+            graf.addLink(i,j);
+        }
+        ranks[i] = m-1;
+    }
+    weights[m-1] = m-1;
+    
+    std::random_device rd{};
+    std::minstd_rand rng(rd());
+    std::discrete_distribution<> disDist(weights.begin(), weights.end());
+    std::uniform_int_distribution<> unif(4,5);
+    
+    std::vector<std::vector<int>> nodesWithRank(m);    
+    int rndNum;
+    int luckyNode;
+    int aktMinRank = m-1;
+    int aktMaxRank = m-1;    
+    
+    
+    //adding m links to (m+t)-th node, links other side is random with a discrete distribution: p(node with degree k) ~ degree k
+    for(int t=0; t<T; t++)
+    {
+        //diplaying actual state:
+        /*
+        {
+            std::cout<<"------------iteration t="<<t<<"---------------\n";
+            std::cout<<"ranks: ";
+            for(int i=0; i<m+T; i++) {std::cout<<ranks[i]<<", ";}
+            std::cout<<std::endl<<"weights: ";
+            for(int i=0; i<weights.size(); i++) {std::cout<<weights[i]<<", ";}
+            std::cout<<std::endl;
+        }
+        */
+
+        //generating the other sides of the m links
+        for(int i=0; i<m; i++)
+        {
+            rndNum = disDist(rng);
+            //calculating which nodes have this randomised degree. at this point, we have m+t nodes
+            for(int node=0; node<m+t; node++)
+            {
+                if(ranks[node] == rndNum) {nodesWithRank[i].push_back(node);}
+            }
+        }
+        
+        //from sufficient ranked nodes, we should choose according to uniform distribution
+        for(int i=0; i<m; i++)
+        {
+            if (nodesWithRank[i].size() == 1)
+            {
+                luckyNode = nodesWithRank[i][0];
+            }
+            else
+            {
+                unif = std::uniform_int_distribution<> (0, (nodesWithRank[i].size()-1));
+                 //ha erre az ágra esne a fenti is -> (unsigned int 1)-(int 1) -> valami random hatalmas szám, vagy épp int 0, a fene sem tudja
+                rndNum = unif(rng);
+                luckyNode = nodesWithRank[i][rndNum];
+            }            
+            graf.addLink(m+t, luckyNode);
+            //accordingly, updating the rank of the lucky node
+            ranks[luckyNode] = graf.degree(luckyNode);
+            
+            //clearing nodesWithRank[i] for the next t-iteration
+            nodesWithRank[i].clear();
+        }
+        //now updating the rank of the (m+t)th node:
+        ranks[m+t] = graf.degree(m+t);        
+        //updating weight vector, for this we need the aktMinRank and aktMaxRank
+        const auto [minIt, maxIt] = std::minmax_element(ranks.begin(), ranks.begin()+m+t+1);
+        aktMinRank = *minIt;
+        aktMaxRank = *maxIt;
+        weights.resize(aktMaxRank+1);
+        std::iota(weights.begin(), weights.end(), 0);
+        for(int i=0; i<aktMinRank; i++)
+        {
+            weights[i]=0;
+        }
+        for(int i=aktMinRank; i<aktMaxRank; i++)
+            {
+                if(std::find(ranks.begin(), ranks.begin()+m+t+1, i) == ranks.begin()+m+t+1) {weights[i]=0;}
+            }
+        //updating discrete distribution according to weight vector
+        disDist = std::discrete_distribution<> (weights.begin(), weights.end());
+    }
+
+//diplaying end state:
+    /*
+    {
+        std::cout<<"........after T iterations, T="<<T<<".........\n";
+        std::cout<<"ranks.size(): "<<ranks.size()<<std::endl;
+        std::cout<<"ranks: ";
+        for(int i=0; i<m+T; i++) {std::cout<<ranks[i]<<", ";}
+        std::cout<<std::endl<<"weights.size(): "<<weights.size();
+        std::cout<<std::endl<<"weights: ";
+        for(int i=0; i<weights.size(); i++) {std::cout<<weights[i]<<", ";}
+        std::cout<<std::endl<<"...................."<<std::endl;
+    }
+    */
+
     return graf;
 }
