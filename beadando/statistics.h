@@ -106,7 +106,15 @@ struct statistics
        double dlm = (double)m;
        linkNum = m*t;
        avgDegr = 2.0*dlm;
-       avgClus = (pow(dlm*(dlm+1.0),2.0) / (4*(dlm-1.0))) * (log((dlm+1.0)/dlm) - (1/(dlm+1.0))) * (pow(log(dlN),2.0) / dlN);
+       if (m == 1)
+       {
+           avgClus = 0.0;
+            // tree-like graph therefore with zero clustering coeff
+       }
+       else
+       {
+           avgClus = (pow(dlm*(dlm+1.0),2.0) / (4*(dlm-1.0))) * (log((dlm+1.0)/dlm) - (1/(dlm+1.0))) * (pow(log(dlN),2.0) / dlN);
+       }
        /*
         avgClus = dlm*std::pow((log(dlN)),2.0)/(8.0*dlN);
         pontatlan volt az a közelítés, amit levezetve találtam a complex network kurzus anyagában,
