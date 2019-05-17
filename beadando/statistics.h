@@ -1,5 +1,8 @@
 #include "distr.h"
 
+const double euler_gamma = 0.57721566490153286060651209008240243104215933593992;
+ //form https://hu.wikipedia.org/wiki/Euler%E2%80%93Mascheroni-%C3%A1lland%C3%B3
+
 struct statistics
 {
     //egy gráf vagy elméleti modell alapján tölthető fel
@@ -37,8 +40,6 @@ struct statistics
            linkNum = linkprob*dlN*(dlN-1.0)/2.0;
            avgDegr = dlN*linkprob;
             //igazából pontosan (dlN-1)linkprob
-           double euler_gamma = 0.57721566490153286060651209008240243104215933593992;
-            //form https://hu.wikipedia.org/wiki/Euler%E2%80%93Mascheroni-%C3%A1lland%C3%B3
            avgPath = (log(dlN)-euler_gamma)/log(avgDegr) + 0.5;
            avgClus = linkprob;
 
@@ -104,25 +105,30 @@ struct statistics
        double dlN = (double)nodeNum;
        double dlm = (double)m;
        linkNum = m*t;
-       avgDegr = 2*m;
-       avgClus = dlm*std::pow((log(dlN)),2.0)/(8.0*dlN);
+       avgDegr = 2.0*dlm;
+       avgClus = (pow(dlm*(dlm+1.0),2.0) / (4*(dlm-1.0))) * (log((dlm+1.0)/dlm) - (1/(dlm+1.0))) * (pow(log(dlN),2.0) / dlN);
+       /*
+        avgClus = dlm*std::pow((log(dlN)),2.0)/(8.0*dlN);
+        pontatlan volt az a közelítés, amit levezetve találtam a complex network kurzus anyagában,
+        eszerint a cikk szerint http://mars.if.pw.edu.pl/~jholyst/data/PRE46126.pdf a mean-filed approximation:
+        [(m^2*(m+1)*2) / (4*(m-1))] * [ln((m+1)/m) - 1/(m-1)] * [(lnt^2) / (t)]
+       */
 
        degreeDist = distr(dlm, dlm-1.0+(double)t, t-1); 
        //legalábbis gráf esetére ez a tartomány biztos, így az elméleti legenerálást is ide korlátozom
        for(int i=0; i<t-1; i++)
        {
-           degreeDist.hist[i] = 2.0*std::pow(dlm, 2.0)*std::pow((double)i, -3.0);
+           degreeDist.hist[i] = 2.0*std::pow(dlm, 2.0)*std::pow((double)i+dlm, -3.0);
        }
        double sum = std::accumulate(degreeDist.hist.begin(), degreeDist.hist.end(), 0.0);
        std::for_each(degreeDist.hist.begin(), degreeDist.hist.end(), [&](double& value){value /= sum; });
        //és így normálva lett az hist elemeinek összege egyre (amit egy gráf produkálhat arra biztosan fennáll ez a tulajdonság)
 
-       double euler_gamma = 0.57721566490153286060651209008240243104215933593992;
        avgPath = (log(dlN) - log(dlm/2.0) - 1.0 - euler_gamma) / ((log(log(dlN))) + log(dlm+2.0)) + 1.5;
        /*
-       with this non-tunable model the scalefree-exponent is 3, therefore the <l> expected value is
-       (lnN - ln(m/2) - 1 - euler_gamma) / (lnlnN + ln(m+2)) + 3/2
-       according to this paper: http://www.if.pw.edu.pl/~jholyst/data/PhysRevE_70_056110.pdf
+        with this non-tunable model the scalefree-exponent is 3, therefore the <l> expected value is
+        (lnN - ln(m/2) - 1 - euler_gamma) / (lnlnN + ln(m+2)) + 3/2
+        according to this paper: http://www.if.pw.edu.pl/~jholyst/data/PhysRevE_70_056110.pdf
        */
    }
 
@@ -143,13 +149,7 @@ struct statistics
    template<typename T>
    void update(graph<T> const& graf)
    {
-        nodeNum = graf.getNodeNum();
-        linkNum = graf.getLinkNum();
-        avgDegr = graf.avgDegree();
-        avgPath = avgPathLen(graf);
-        avgClus = avgClusCoeff(graf);
-        degreeDist = distr(0.0, (double)nodeNum, nodeNum);
-        degreeDist.feltolt(graf);
+        this = statistics(graf);
    }
 };
 
