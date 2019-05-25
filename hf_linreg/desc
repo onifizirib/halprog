@@ -1,0 +1,10 @@
+- Legalább két lépésre lesz szükség, mert a meredekség számításához kellenek már a kiszámolt x-átlag y-átlag értékek. 
+  Az átlagértékeket eddig egy-egy accumulate-tel számoltam ki. 
+- Ha ezek megvannak, egy inner_product még mindenképp kell a meredekség számlálójába és neezőjébe.
+
+Tehát:
+- Összevonni legfeljebb a két accumulate-t lehet az első lépésben.
+- Összevonni legfeljebb a két inner_product-ot lehet a második lépésben.
+
+Kérdés, hogy meg lehet-e ezeket az összevonásokat tenni.
+Válasz, hogy igen, bár nem tudom mennyire számít szépnek a megoldásom (lásd main.cpp ebben a mappában).
