@@ -11,7 +11,7 @@ bool similar(MatrixNxN<T> const& m1, MatrixNxN<T> const& m2)
     const int N = m1.size();
     for(int i=0; i<N; i++)
     {
-        if(std::abs(m1[0]-m2[0]) > 1e-15)
+        if(std::abs(m1[i]-m2[i]) > 1e-15)
         {
             cmp = false;
             break;
