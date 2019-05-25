@@ -9,8 +9,7 @@
 struct NoSolution{};
 
 std::variant<NoSolution, std::array<double,2>> linreg(std::vector<double> const &x, std::vector<double> const &y)
-{    
-    
+{  
 //hibakezelés, ha x és y nem egyforma hosszúak
     if (x.size() != y.size())
     {
@@ -35,8 +34,7 @@ std::variant<NoSolution, std::array<double,2>> linreg(std::vector<double> const 
     double numOfSample = (double)x.size();    
     x_mean /= numOfSample;
     y_mean /= numOfSample;
-    
-    
+       
 //meredekség és eltolás számítása  
     double nevezo = 0.0;
     auto binOp2 = [x_mean, y_mean, &nevezo](double x, double y)
