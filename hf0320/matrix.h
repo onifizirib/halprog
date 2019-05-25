@@ -387,29 +387,7 @@ MatrixNxN<T>&& operator* (MatrixNxN<T> const& m, MatrixNxN<T>&& mv)
 template<typename T>
 MatrixNxN<T>&& operator* (MatrixNxN<T>&& mv, MatrixNxN<T>&& m)
 {
-    if (!sizecheck(m,mv)) {sizerr();}
-    const int N = m.size();
-    std::vector<T> tmp;
-    //ideiglenes sor tmp
-    for(int i=0; i<N; i++)
-    {
-        tmp = std::vector<double>(N,(T)0);
-        for(int j=0; j<N; j++)
-        {
-            T tempRes = (T)0;
-            for(int n=0; n<N; n++)
-            {
-                tempRes += mv(i,n)*m(n,j);
-            }
-            tmp[j] = tempRes;
-        }
-        //sor beszúrása mv i.sora helyére
-        for(int k=0; k<N; k++)
-        {
-            mv(i,k) = tmp[k];
-        }
-    }
-    return std::move(mv);
+    return std::move(std::move(mv)*m);
 }
 
 //transzponálás (2 verzió)
