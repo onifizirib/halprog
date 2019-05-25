@@ -1,1 +1,4 @@
-Mappalétrehozás végett álljék itt egy file.
+A "matrixMultipTimes.png" egy N-hez számolt 16 mérés minimumjaiból készült a 2-434 tartományon.
+A "matrixMultipTimes1.png" egy N-hez számolt 1 mérésből készült a 2-514 tartományon.
+A "matrixMultipTimes16.png" egy N-hez számolt 16 mérés minimumjaiból készült a 2-514 tartományon.
+A "matrixMultipTimes32.png" egy N-hez számolt 32 mérés minimumjaiból készült a 2-514 tartományon.
