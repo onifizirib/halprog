@@ -1,3 +1,4 @@
+Alapgondolat:
 - Legalább két lépésre lesz szükség, mert a meredekség számításához kellenek már a kiszámolt x-átlag y-átlag értékek. 
   Az átlagértékeket eddig egy-egy accumulate-tel számoltam ki. 
 - Ha ezek megvannak, egy inner_product még mindenképp kell a meredekség számlálójába és neezőjébe.
