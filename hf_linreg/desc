@@ -7,4 +7,8 @@ Tehát:
 - Összevonni legfeljebb a két inner_product-ot lehet a második lépésben.
 
 Kérdés, hogy meg lehet-e ezeket az összevonásokat tenni.
-Válasz, hogy igen, bár nem tudom mennyire számít szépnek a megoldásom (lásd main.cpp ebben a mappában).
+Válasz, hogy igen, bár nem tudom mennyire számít szépnek a megoldásom (lásd main.cpp ebben a mappában):
+- A két accumulate (mivel két különböző vektort is be kell fogadjon) egy transform-mal lett helyettesítve.
+  Lehetne egyébként egy inner_product-tal is, csak ott felesleges lenne az egyik bináris operáció. 
+  (Így cserébe meg egy dummy vektor van, aminek az elemeit önmagára írom át. Nem tudom, ez mennyire rossz.)
+- A két inner_product egy inner_product-tal lett helyettesítve.
