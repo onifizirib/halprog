@@ -17,37 +17,31 @@ std::variant<NoSolution, std::array<double,2>> linreg(std::vector<double> const 
         return NoSolution{};
     }
     
-//mintaátlagok számítása
-    double x_mean = 0.0;
-    double y_mean = 0.0;    
-    auto binOp0 = [&x_mean, &y_mean](double x, double y)
+//mintaátlagok számítása 
+    auto binOp2 = [] (double x, double y)
     {
-       x_mean += x;
-       y_mean += y;
-       return x;
+        return std::array<double,2> {x, y};
     };
-    std::vector<double> dummy = x;    
-    std::transform(x.begin(), x.end(), y.begin(), dummy.begin(), binOp0);
-    //mivel x és y const -> nem írhatom őket, hiába írnám vissza ugyanazt
-    //de nem akarom véletlen elrontani az adatot, így maradjon inkább const
+    auto binOp1 = [] (std::array<double,2> A, std::array<double,2> B)
+    {
+        return std::array<double,2> {A[0]+B[0], A[1]+B[1]};
+    };
+    std::array<double,2> means = std::inner_product(x.begin(), x.end(), y.begin(), std::array<double,2> {0.0, 0.0}, binOp1, binOp2);
     
     double numOfSample = (double)x.size();    
-    x_mean /= numOfSample;
-    y_mean /= numOfSample;
+    means[0] /= numOfSample;
+    means[1] /= numOfSample;
+    
+    const double x_mean = means[0];
+    const double y_mean = means[1];
        
 //meredekség és eltolás számítása  
-    double nevezo = 0.0;
-    auto binOp2 = [x_mean, y_mean, &nevezo](double x, double y)
+    auto binOp3 = [& x_mean, & y_mean](double x, double y)
     {
-        nevezo += std::pow((x-x_mean), 2.0);
-        return (x-x_mean)*(y-y_mean);
+        return std::array<double,2> {(x-x_mean)*(y-y_mean), std::pow((x-x_mean),2.0)};
     };
-    auto binOp1 = [](double x, double y)
-    {
-        return x+y;
-    };
-    double szamlalo = std::inner_product(x.begin(), x.end(), y.begin(), 0.0, binOp1, binOp2);
-    double meredekseg = szamlalo/nevezo;
+    std::array<double,2> tort = std::inner_product(x.begin(), x.end(), y.begin(), std::array<double,2> {0.0, 0.0}, binOp1, binOp3);
+    double meredekseg = tort[0]/tort[1];
     double eltolas = y_mean - meredekseg*x_mean;
     
     return std::array<double,2> {meredekseg,eltolas};
