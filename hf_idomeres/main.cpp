@@ -51,10 +51,10 @@ int main() {
 	}
 	std::cout << std::setprecision(16);
   	for(unsigned int i=0; i<n; i++)
-    {
-        output32 << sizeNs[i] << " " << mulTimes32[i] << std::endl;
+    	{
+        	output32 << sizeNs[i] << " " << mulTimes32[i] << std::endl;
 		output1  << sizeNs[i] << " " << mulTimes1[i]  << std::endl;
-    }  
+    	}  
 	output32.close();
 	output1.close();
     
