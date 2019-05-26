@@ -10,20 +10,17 @@ double minOfTrials(int const& numOfTrials, int const& N,
 					std::random_device & rd, std::minstd_rand & gen, 
 					std::uniform_real_distribution<double> & unif)
 {
-    //random mátrixok előállítása
     std::vector<double> trialTimes(numOfTrials);
-
     //időmérés numOfTrial-szor:
     for(int i=0; i < numOfTrials; i++)
     {
-		MatrixNxN<double> m1(N, [&](int i){return unif(gen);});
+	MatrixNxN<double> m1(N, [&](int i){return unif(gen);});
     	MatrixNxN<double> m2(N, [&](int i){return unif(gen);});
         auto t_begin = std::chrono::high_resolution_clock::now();
         MatrixNxN<double> m = m1*m2;
         auto t_end = std::chrono::high_resolution_clock::now();
         trialTimes[i]= (static_cast<std::chrono::duration<double, std::micro>>(t_end-t_begin)).count();
-    }
-    
+    }    
     return *std::min_element(trialTimes.begin(), trialTimes.end());
 }
 
