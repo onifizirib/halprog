@@ -30,33 +30,33 @@ int main() {
     std::minstd_rand gen(rd());
     std::uniform_real_distribution<double> unif(0, 100);
 
-	std::vector<int> sizeNs;
+    std::vector<int> sizeNs;
     std::vector<double> mulTimes32;
-	std::vector<double> mulTimes1;
+    std::vector<double> mulTimes1;
     for(int i=2; i < 515; i+=4)
-	{
+    {
         sizeNs.push_back(i);
         mulTimes32.push_back(minOfTrials(32, i, rd, gen, unif));
-		mulTimes1.push_back(minOfTrials(1, i, rd, gen, unif));
+	mulTimes1.push_back(minOfTrials(1, i, rd, gen, unif));
     }
     unsigned int n = mulTimes32.size();
-	std::ofstream output32;
-	std::ofstream output1;
-  	output32.open("timesOfMulti32.txt");
-	output1.open("timesOfMulti1.txt");
-	if(!output32.is_open() || !output1.is_open())
-	{
-		std::cout << "sikertelen fajliras!\n";
-		return -1;
-	}
-	std::cout << std::setprecision(16);
-  	for(unsigned int i=0; i<n; i++)
-    	{
-        	output32 << sizeNs[i] << " " << mulTimes32[i] << std::endl;
-		output1  << sizeNs[i] << " " << mulTimes1[i]  << std::endl;
-    	}  
-	output32.close();
-	output1.close();
+    std::ofstream output32;
+    std::ofstream output1;
+    output32.open("timesOfMulti32.txt");
+    output1.open("timesOfMulti1.txt");
+    if(!output32.is_open() || !output1.is_open())
+    {
+   	std::cout << "sikertelen fajliras!\n";
+	return -1;
+    }
+    std::cout << std::setprecision(16);
+    for(unsigned int i=0; i<n; i++)
+    {
+       	output32 << sizeNs[i] << " " << mulTimes32[i] << std::endl;
+	output1  << sizeNs[i] << " " << mulTimes1[i]  << std::endl;
+    }  
+    output32.close();
+    output1.close();
     
     return 0;
 }
